@@ -1,0 +1,6 @@
+overwrite: true
+schema: "http://localhost:9000"
+generates:
+  src/types/spacebar.d.ts:
+    plugins:
+      - "typescript"
