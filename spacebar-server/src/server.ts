@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import 'module-alias/register';
 import 'reflect-metadata';
+import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import { GraphQLServer } from 'graphql-yoga';
 import { buildSchema, GeneratingSchemaError } from 'type-graphql';
@@ -8,7 +9,10 @@ import { buildSchema, GeneratingSchemaError } from 'type-graphql';
 import PlayerResolver from '@spacebar-server/resolvers/PlayerResolver';
 
 
-const MONGODB = 'mongodb://localhost:9100/players';
+dotenv.config();
+
+const { DB_HOST = 'localhost', DB_PORT = 9100 } = process.env;
+const MONGODB = `mongodb://${DB_HOST}:${DB_PORT}/players`;
 
 const startServer = async () => {
   const schema = await buildSchema({
@@ -20,8 +24,9 @@ const startServer = async () => {
     schema,
   });
 
-  server.start({ port: 9000 }, () => {
-    console.log('Server is running on port 9000');
+  const { GQL_PORT = 9000 } = process.env;
+  server.start({ port: GQL_PORT }, () => {
+    console.log(`Server is running on port ${GQL_PORT}.`);
   });
 };
 
