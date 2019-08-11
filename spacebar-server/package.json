@@ -3,7 +3,8 @@
     "clean": "rm -rf lib/",
     "build": "yarn clean && npx tsc",
     "lint": "npx eslint 'src/**'",
-    "start": "yarn build && node ./lib/server.js"
+    "start": "yarn build && node ./lib/server.js",
+    "mongo": "mongod --dbpath db/ --port 9100"
   },
   "dependencies": {
     "dotenv": "^8.0.0",
