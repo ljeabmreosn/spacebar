@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 import { GraphQLServer } from 'graphql-yoga';
 import { buildSchema, GeneratingSchemaError } from 'type-graphql';
 
-import PlayerResolver from '@spacebar-server/resolvers/PlayerResolver';
+import { PlayerResolver } from '@spacebar-server/resolvers';
 
 
 dotenv.config();
@@ -44,4 +44,4 @@ startServer()
       console.error(detail.message);
     });
     process.exit(1);
-  })
+  });

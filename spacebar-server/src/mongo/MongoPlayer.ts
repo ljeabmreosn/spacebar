@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model } from 'mongoose';
 
 
 const PlayerSchema = new Schema({
@@ -9,4 +9,6 @@ const PlayerSchema = new Schema({
   autoIndex: false,
 });
 
-export const MongoPlayer = model('Player', PlayerSchema);
+const MongoPlayer = model('Player', PlayerSchema);
+
+export default MongoPlayer;
