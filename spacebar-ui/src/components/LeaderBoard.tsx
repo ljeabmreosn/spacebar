@@ -2,7 +2,7 @@ import React from 'react';
 import { Query } from '@apollo/react-components';
 import { QueryResult } from '@apollo/react-common';
 import { AgGridReact } from 'ag-grid-react';
-import { ColDef } from 'ag-grid-community';
+import { ColDef, GridReadyEvent, GridApi } from 'ag-grid-community';
 import gql from 'graphql-tag';
 
 import * as spacebar from 'types/spacebar';
@@ -29,21 +29,47 @@ const columnDefs: ColDef[] = [
 
 interface Props { }
 
-interface State { }
+interface State {
+  hidden: boolean;
+}
 
 export default class LeaderBoard extends React.Component<Props, State> {
+  api: GridApi | null = null;
+
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      hidden: true,
+    };
+  }
+
+  onGridReady = (event: GridReadyEvent) => {
+    this.api = event.api;
+    this.api.sizeColumnsToFit();
+
+    this.setState({
+      hidden: false,
+    })
+  }
+
   onQuery = ({ data, loading, error }: QueryResult<spacebar.Query>) => {
     if (error) return <h3>Error: {error.message}</h3>;
-    if (loading) return <h3>Loading ...</h3>;
 
-    const rowData = data!.getTopPlayers;
+    const rowData = !loading ? data!.getTopPlayers : [];
+    const { hidden } = this.state;
 
     return (
-      <div className="ag-theme-balham" style={{ width: '100%', height: '100%' }}>
-        <AgGridReact
-          rowData={rowData}
-          columnDefs={columnDefs}
-        />
+      <div className="ag-theme-balham sb-leaderboard">
+        <div id="left"></div>
+        <div id="center" className={`${hidden || loading ? 'bp3-skeleton' : ''}`}>
+          <AgGridReact
+            rowData={rowData}
+            columnDefs={columnDefs}
+            onGridReady={this.onGridReady}
+          />
+        </div>
+        <div id="right"></div>
       </div>
     );
   };

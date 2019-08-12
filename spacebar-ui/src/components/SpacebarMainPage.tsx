@@ -2,7 +2,7 @@ import React from 'react';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from '@apollo/react-components';
 
-import LeaderBoard from 'components/LeaderBoard';
+import Game from 'components/Game';
 
 
 const client = new ApolloClient({
@@ -12,7 +12,7 @@ const client = new ApolloClient({
 
 const SpacebarMainPage = () => (
   <ApolloProvider client={client}>
-    <LeaderBoard />
+    <Game />
   </ApolloProvider>
 );
 
