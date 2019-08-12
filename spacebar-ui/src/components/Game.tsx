@@ -1,11 +1,20 @@
 import React from 'react';
-import { H3, ProgressBar } from '@blueprintjs/core';
+import { H3, ProgressBar, Dialog, InputGroup, Classes, Button, Colors, FormGroup, Intent } from '@blueprintjs/core';
 import { SPACE } from '@blueprintjs/core/lib/esm/common/keys';
+import { ApolloConsumer } from '@apollo/react-common';
+import { ApolloClient, gql } from 'apollo-boost';
 
 import LeaderBoard from 'components/LeaderBoard';
-
+import Message, { TIMEOUT } from 'utils/Message';
 import 'styles/Game.css';
 
+
+const MUTATION_SAVE = gql`
+  mutation SavePlayer($player: NewPlayer!) {
+    savePlayer(player: $player)
+  }
+`
+;
 
 /** Three seconds. */
 const DURATION = 3000;
@@ -23,7 +32,9 @@ interface Props { }
 interface State {
   flash: boolean;
   stage: Stage;
-  clicks: number;
+  score: number;
+  isHighScoreOpen: boolean;
+  playerName: string;
   progress: number | null;
 }
 
@@ -35,8 +46,9 @@ interface State {
  *   4. Ask to play again.
  */
 export default class Game extends React.Component<Props, State> {
-  timerId: NodeJS.Timeout | null = null;
+  client: ApolloClient<any> | null = null;
   start: number | null = null
+  timerId: NodeJS.Timeout | null = null;
 
   constructor(props: Props) {
     super(props);
@@ -44,17 +56,21 @@ export default class Game extends React.Component<Props, State> {
     this.state = {
       flash: false,
       stage: Stage.Directions,
-      clicks: 0,
+      score: 0,
       progress: null,
+      isHighScoreOpen: false,
+      playerName: '',
     };
   }
 
   componentDidMount = () => {
-    document.addEventListener('keyup', this.onKeyPressed);
+    window.addEventListener('keyup', this.onKeyPressed);
+    window.addEventListener('touchend', this.onKeyPressed);
   };
 
   componentWillUnmount = () => {
-    document.removeEventListener('keyup', this.onKeyPressed);
+    window.removeEventListener('keyup', this.onKeyPressed);
+    window.removeEventListener('touchend', this.onKeyPressed);
     if (this.timerId) {
       clearInterval(this.timerId);
     }
@@ -77,18 +93,19 @@ export default class Game extends React.Component<Props, State> {
 
     this.setState({
       stage: Stage.GameOver,
+      isHighScoreOpen: true,
     });
   };
 
   spacePressed = () => {
-    const { clicks } = this.state;
-    this.setState({ flash: true, clicks: clicks + 1 });
+    const { score } = this.state;
+    this.setState({ flash: true, score: score + 1 });
     setTimeout(() => this.setState({ flash: false }), 300);
   };
 
-  onKeyPressed = ({ keyCode }: KeyboardEvent) => {
-    console.log('key', keyCode);
-    if (keyCode !== SPACE) return;
+  onKeyPressed = (event: KeyboardEvent | Event) => {
+    console.log('key');
+    if ((event as KeyboardEvent).keyCode !== undefined && (event as KeyboardEvent).keyCode !== SPACE) return;
 
     const { stage } = this.state;
     switch (stage) {
@@ -103,8 +120,55 @@ export default class Game extends React.Component<Props, State> {
     }
   };
 
-  render = () => {
-    const { flash, stage, clicks, progress } = this.state;
+  onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      playerName: event.target.value,
+    });
+  };
+
+  onSubmit = (event: any) => {
+    const { playerName, score } = this.state;
+    if ((event as React.FormEvent<HTMLFormElement>).preventDefault !== undefined) {
+      (event as React.FormEvent<HTMLFormElement>).preventDefault();
+    }
+
+    this.setState({
+      isHighScoreOpen: false,
+    }, () => this.savePlayer(playerName, score));
+
+    return false;
+  };
+
+  savePlayer = async (playerName: string, score: number) => {
+    try {
+      await this.client!.mutate({
+        mutation: MUTATION_SAVE,
+        variables: {
+          player: {
+            name: playerName,
+            score,
+          },
+        },
+      });
+
+      Message.show({
+        timeout: TIMEOUT,
+        message: 'Successfully saved score!',
+        icon: 'tick',
+        intent: Intent.SUCCESS,
+      });
+    } catch (e) {
+      Message.show({
+        timeout: TIMEOUT,
+        message: `Unable to save score: ${e}`,
+        icon: 'warning-sign',
+        intent: Intent.DANGER,
+      });
+    }
+  };
+
+  renderFromStage = (stage: Stage) => {
+    const { flash, score, progress, isHighScoreOpen, playerName } = this.state;
 
     switch (stage) {
       case Stage.Directions: return <H3>{DIRECTIONS}</H3>;
@@ -112,6 +176,26 @@ export default class Game extends React.Component<Props, State> {
         <div style={{ margin: '0 auto', height: '100%', width: '100%', boxAlign: 'center' }}>
           <H3>Game over</H3>
           <LeaderBoard />
+          <Dialog
+            icon="flame"
+            title="High Score"
+            isOpen={isHighScoreOpen}
+            onClose={() => this.setState({ isHighScoreOpen: false })}
+            usePortal
+            autoFocus
+            canEscapeKeyClose
+            canOutsideClickClose={false}
+          >
+            <form onSubmit={this.onSubmit}>
+              <InputGroup
+                className={Classes.INPUT}
+                onChange={this.onNameChange}
+                placeholder="Your name"
+                value={playerName}
+              />
+              <Button color={Colors.BLUE1} fill type="submit" onClick={this.onSubmit}>Submit</Button>
+            </form>
+          </Dialog>
         </div>
       )
       case Stage.Playing: return (
@@ -119,7 +203,7 @@ export default class Game extends React.Component<Props, State> {
           className={`${flash ? 'flash' : ''}`}
           style={{ width: '100vw', height: '100vh' }}
         >
-          <H3>{clicks}</H3>
+          <H3>{score}</H3>
           <ProgressBar
             className="sb-footer"
             value={progress!}
@@ -128,5 +212,20 @@ export default class Game extends React.Component<Props, State> {
         </div>
       )
     }
+
+  };
+
+  render = () => {
+    const { stage } = this.state;
+    return (
+      <ApolloConsumer>
+        {
+          client => {
+            this.client = client;
+            return this.renderFromStage(stage);
+          }
+        }
+      </ApolloConsumer>
+    )
   };
 }

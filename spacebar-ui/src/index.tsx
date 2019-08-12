@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import dotenv from 'dotenv';
 
 import 'ag-grid-community/dist/styles/ag-grid.css';
 
@@ -8,6 +9,8 @@ import * as serviceWorker from 'scripts/serviceWorker';
 
 import 'styles/index.css';
 
+
+dotenv.config();
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
