@@ -5,10 +5,11 @@ import dotenv from 'dotenv';
 
 import Game from 'components/Game';
 
+
 dotenv.config();
+
 const { REACT_APP_GQL_HOST = 'localhost', REACT_APP_GQL_PORT = 9000 } = process.env;
 
-console.log(REACT_APP_GQL_HOST, REACT_APP_GQL_PORT);
 const client = new ApolloClient({
   uri: `http://${REACT_APP_GQL_HOST}:${REACT_APP_GQL_PORT}`,
 });

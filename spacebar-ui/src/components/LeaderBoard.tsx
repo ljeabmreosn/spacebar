@@ -18,9 +18,7 @@ const QUERY_LEADERBOARD = gql`
       id
     }
   }
-`
-;
-
+`;
 const columnDefs: ColDef[] = [
   { headerName: 'Name', field: 'name' },
   { headerName: 'Score', field: 'score' },
@@ -64,18 +62,25 @@ export default class LeaderBoard extends React.Component<Props, State> {
 
     this.setState({
       hidden: false,
-    })
+    });
   };
 
   onQuery = ({ data, loading, error }: QueryResult<spacebar.Query>) => {
-    if (error) return <h3>Error: {error.message}</h3>;
+    if (error) {
+      return (
+        <h3>
+Error:
+          {error.message}
+        </h3>
+      );
+    }
 
     const rowData = !loading ? data!.getTopPlayers : [];
     const { hidden } = this.state;
 
     return (
       <div className="ag-theme-balham sb-leaderboard">
-        <div id="left"></div>
+        <div id="left" />
         <div id="center" className={`${hidden || loading ? 'bp3-skeleton' : ''}`}>
           <AgGridReact
             rowData={rowData}
@@ -83,7 +88,7 @@ export default class LeaderBoard extends React.Component<Props, State> {
             onGridReady={this.onGridReady}
           />
         </div>
-        <div id="right"></div>
+        <div id="right" />
       </div>
     );
   };

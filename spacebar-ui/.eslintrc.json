@@ -1,0 +1,13 @@
+{
+  "extends": ["airbnb-typescript"],
+  "env": {
+    "jest": true,
+    "browser": true
+  },
+  "rules": {
+    "no-unused-vars": "off",
+    "eol-last": "off",
+    "lines-between-class-members": "off",
+    "class-methods-use-this": "off"
+  }
+}

@@ -1,11 +1,14 @@
 import React from 'react';
-import { H3, ProgressBar, Dialog, InputGroup, Classes, Button, Colors, FormGroup, Intent } from '@blueprintjs/core';
+import {
+  H3, ProgressBar, Dialog, InputGroup, Classes, Button, Colors, Intent,
+} from '@blueprintjs/core';
 import { SPACE } from '@blueprintjs/core/lib/esm/common/keys';
 import { ApolloConsumer } from '@apollo/react-common';
 import { ApolloClient, gql } from 'apollo-boost';
 
 import LeaderBoard from 'components/LeaderBoard';
 import Message, { TIMEOUT } from 'utils/Message';
+
 import 'styles/Game.css';
 
 
@@ -47,7 +50,7 @@ interface State {
  */
 export default class Game extends React.Component<Props, State> {
   client: ApolloClient<any> | null = null;
-  start: number | null = null
+  start: number | null = null;
   timerId: NodeJS.Timeout | null = null;
 
   constructor(props: Props) {
@@ -74,7 +77,7 @@ export default class Game extends React.Component<Props, State> {
     if (this.timerId) {
       clearInterval(this.timerId);
     }
-  }
+  };
 
   startTimer = () => {
     this.start = Date.now();
@@ -104,7 +107,6 @@ export default class Game extends React.Component<Props, State> {
   };
 
   onKeyPressed = (event: KeyboardEvent | Event) => {
-    console.log('key');
     if ((event as KeyboardEvent).keyCode !== undefined && (event as KeyboardEvent).keyCode !== SPACE) return;
 
     const { stage } = this.state;
@@ -114,9 +116,10 @@ export default class Game extends React.Component<Props, State> {
           this.startTimer();
           this.spacePressed();
         })
-      )
+      );
       case Stage.Playing: return this.spacePressed();
-      case Stage.GameOver: return;
+      case Stage.GameOver: return null;
+      default: return null;
     }
   };
 
@@ -168,12 +171,17 @@ export default class Game extends React.Component<Props, State> {
   };
 
   renderFromStage = (stage: Stage) => {
-    const { flash, score, progress, isHighScoreOpen, playerName } = this.state;
+    const {
+      flash, score, progress, isHighScoreOpen, playerName,
+    } = this.state;
 
     switch (stage) {
       case Stage.Directions: return <H3>{DIRECTIONS}</H3>;
       case Stage.GameOver: return (
-        <div style={{ margin: '0 auto', height: '100%', width: '100%', boxAlign: 'center' }}>
+        <div style={{
+          margin: '0 auto', height: '100%', width: '100%', boxAlign: 'center',
+        }}
+        >
           <H3>Game over</H3>
           <LeaderBoard />
           <Dialog
@@ -197,7 +205,7 @@ export default class Game extends React.Component<Props, State> {
             </form>
           </Dialog>
         </div>
-      )
+      );
       case Stage.Playing: return (
         <div
           className={`${flash ? 'flash' : ''}`}
@@ -210,9 +218,9 @@ export default class Game extends React.Component<Props, State> {
             stripes={false}
           />
         </div>
-      )
+      );
+      default: return null;
     }
-
   };
 
   render = () => {
@@ -226,6 +234,6 @@ export default class Game extends React.Component<Props, State> {
           }
         }
       </ApolloConsumer>
-    )
+    );
   };
 }
