@@ -44,14 +44,28 @@ export default class LeaderBoard extends React.Component<Props, State> {
     };
   }
 
+  componentWillMount = () => {
+    window.addEventListener('resize', this.onResize);
+  };
+
+  componentWillUnmount = () => {
+    window.removeEventListener('resize', this.onResize);
+  };
+
+  onResize = () => {
+    if (this.api) {
+      this.api.sizeColumnsToFit();
+    }
+  };
+
   onGridReady = (event: GridReadyEvent) => {
     this.api = event.api;
-    this.api.sizeColumnsToFit();
+    this.onResize();
 
     this.setState({
       hidden: false,
     })
-  }
+  };
 
   onQuery = ({ data, loading, error }: QueryResult<spacebar.Query>) => {
     if (error) return <h3>Error: {error.message}</h3>;
@@ -82,5 +96,5 @@ export default class LeaderBoard extends React.Component<Props, State> {
     >
       {this.onQuery}
     </Query>
-  )
+  );
 }
