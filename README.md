@@ -3,6 +3,9 @@
 ![SpaceBar](spacebar-ui/public/favicon.ico)
 ---
 
+## How to I play?
+The application is running [here](http://spacebar.eastus.cloudapp.azure.com:3000/).
+
 ## What is this?
 
 This is a demo fullstack project written in Node.js and Typescript.
