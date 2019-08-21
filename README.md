@@ -3,7 +3,7 @@
 ![SpaceBar](spacebar-ui/public/favicon.ico)
 ---
 
-## How to I play?
+## How do I play?
 The application is running [here](http://spacebar.eastus.cloudapp.azure.com:3000/).
 
 ## What is this?
