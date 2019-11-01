@@ -4,7 +4,8 @@
 ---
 
 ## How do I play?
-The application is running [here](http://spacebar.eastus.cloudapp.azure.com:3000/).
+~The application is running [here](http://spacebar.eastus.cloudapp.azure.com:3000/).~
+Unfortunately, my Azure student trial expired, so this application is not hosted online anymore.
 
 ## What is this?
 
