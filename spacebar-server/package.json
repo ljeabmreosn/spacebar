@@ -12,7 +12,7 @@
     "module-alias": "^2.2.1",
     "mongoose": "^5.7.5",
     "reflect-metadata": "^0.1.13",
-    "type-graphql": "^0.17.4",
+    "type-graphql": "^0.17.6",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
